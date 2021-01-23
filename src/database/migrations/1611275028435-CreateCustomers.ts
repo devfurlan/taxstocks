@@ -17,6 +17,15 @@ export default class CreateCustomers1611275028435 implements MigrationInterface 
           type: 'varchar',
         },
         {
+          name: 'birth',
+          type: 'date',
+        },
+        {
+          name: 'gender',
+          type: 'enum',
+          enum: ['M', 'F', 'O'],
+        },
+        {
           name: 'cpf',
           type: 'char',
           length: '11',
@@ -30,11 +39,6 @@ export default class CreateCustomers1611275028435 implements MigrationInterface 
         {
           name: 'password',
           type: 'varchar',
-        },
-        {
-          name: 'gender',
-          type: 'enum',
-          enum: ['M', 'F', 'O'],
         },
         {
           name: 'created_at',
