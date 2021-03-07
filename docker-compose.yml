@@ -1,0 +1,12 @@
+version: '3.7'
+services:
+  postgres:
+    image: postgres:alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=docker
+    ports:
+      - '5433:5432'
+    volumes:
+      - ~/.taxstocks/postgres-data:/var/lib/postgresql/data
