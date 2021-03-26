@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
-export default class CreateBrokerageNotes1611275049110 implements MigrationInterface {
+export default class CreateTradingNotes1611275049110 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(new Table({
-      name: 'brokerage_notes',
+      name: 'trading_notes',
       columns: [
         {
           name: 'id',
@@ -54,8 +54,8 @@ export default class CreateBrokerageNotes1611275049110 implements MigrationInter
       ],
     }));
 
-    await queryRunner.createForeignKey('brokerage_notes', new TableForeignKey({
-      name: 'BrokerageNoteCustomer',
+    await queryRunner.createForeignKey('trading_notes', new TableForeignKey({
+      name: 'TradingNoteCustomer',
       columnNames: ['customer_id'],
       referencedColumnNames: ['id'],
       referencedTableName: 'customers',
@@ -63,8 +63,8 @@ export default class CreateBrokerageNotes1611275049110 implements MigrationInter
       onUpdate: 'CASCADE',
     }));
 
-    await queryRunner.createForeignKey('brokerage_notes', new TableForeignKey({
-      name: 'BrokerageNoteBroker',
+    await queryRunner.createForeignKey('trading_notes', new TableForeignKey({
+      name: 'TradingNoteBroker',
       columnNames: ['broker_id'],
       referencedColumnNames: ['id'],
       referencedTableName: 'brokers',
@@ -74,6 +74,6 @@ export default class CreateBrokerageNotes1611275049110 implements MigrationInter
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('brokerage_notes', true);
+    await queryRunner.dropTable('trading_notes', true);
   }
 }
