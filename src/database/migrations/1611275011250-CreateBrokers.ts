@@ -6,26 +6,30 @@ export default class CreateBrokers1611275011250 implements MigrationInterface {
       name: 'brokers',
       columns: [
         {
-          name: 'id',
-          type: 'uuid',
+          name: 'cnpj',
+          type: 'char',
+          length: '14',
           isPrimary: true,
-          generationStrategy: 'uuid',
-          default: 'uuid_generate_v4()',
         },
         {
           name: 'name',
           type: 'varchar',
-        },
-        {
-          name: 'cnpj',
-          type: 'char',
-          length: '11',
-          isUnique: true,
+          isNullable: true,
         },
         {
           name: 'website',
           type: 'varchar',
           isNullable: true,
+        },
+        {
+          name: 'created_at',
+          type: 'timestamp with time zone',
+          default: 'now()',
+        },
+        {
+          name: 'updated_at',
+          type: 'timestamp with time zone',
+          default: 'now()',
         },
       ],
     }));

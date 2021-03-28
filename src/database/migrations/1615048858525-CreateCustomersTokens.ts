@@ -49,6 +49,6 @@ export default class CreateCustomersTokens1615048858525 implements MigrationInte
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('users_tokens');
+    await queryRunner.dropTable('customers_tokens');
   }
 }

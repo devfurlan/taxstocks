@@ -13,7 +13,7 @@ export default class CreateTradingNotes1611275049110 implements MigrationInterfa
           default: 'uuid_generate_v4()',
         },
         {
-          name: 'stock_code',
+          name: 'ticker',
           type: 'varchar',
         },
         {
@@ -25,7 +25,7 @@ export default class CreateTradingNotes1611275049110 implements MigrationInterfa
           type: 'int',
         },
         {
-          name: 'transaction_type',
+          name: 'type',
           type: 'varchar',
         },
         {
@@ -35,19 +35,21 @@ export default class CreateTradingNotes1611275049110 implements MigrationInterfa
           scale: 2,
         },
         {
-          name: 'filename',
-          type: 'varchar',
-        },
-        {
           name: 'customer_id',
           type: 'uuid',
         },
         {
-          name: 'broker_id',
-          type: 'uuid',
+          name: 'broker_cnpj',
+          type: 'char',
+          length: '14',
         },
         {
-          name: 'uploaded_at',
+          name: 'created_at',
+          type: 'timestamp with time zone',
+          default: 'now()',
+        },
+        {
+          name: 'updated_at',
           type: 'timestamp with time zone',
           default: 'now()',
         },
@@ -65,8 +67,8 @@ export default class CreateTradingNotes1611275049110 implements MigrationInterfa
 
     await queryRunner.createForeignKey('trading_notes', new TableForeignKey({
       name: 'TradingNoteBroker',
-      columnNames: ['broker_id'],
-      referencedColumnNames: ['id'],
+      columnNames: ['broker_cnpj'],
+      referencedColumnNames: ['cnpj'],
       referencedTableName: 'brokers',
       onDelete: 'RESTRICT',
       onUpdate: 'CASCADE',

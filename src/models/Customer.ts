@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import TradingNote from './TradingNote';
 
 @Entity('customers')
 class Customer {
@@ -30,6 +31,9 @@ class Customer {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @OneToMany(() => TradingNote, trading_notes => trading_notes.customer_id)
+  trading_notes: TradingNote[];
 }
 
 export default Customer;
