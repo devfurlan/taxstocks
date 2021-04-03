@@ -13,6 +13,10 @@ export default class CreateTradingNotes1611275049110 implements MigrationInterfa
           default: 'uuid_generate_v4()',
         },
         {
+          name: 'code',
+          type: 'varchar',
+        },
+        {
           name: 'ticker',
           type: 'varchar',
         },

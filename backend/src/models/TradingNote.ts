@@ -17,6 +17,9 @@ class TradingNote {
   id: string;
 
   @Column()
+  code: string;
+
+  @Column()
   ticker: string;
 
   @Column('int')

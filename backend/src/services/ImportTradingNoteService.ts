@@ -1,11 +1,13 @@
 import fs from 'fs';
 import csvParse from 'csv-parse';
 import { getCustomRepository, getRepository, In } from 'typeorm';
+import convertDateBRtoISO from '../Utils/convertDateBRtoISO';
 import TradingNote from '../models/TradingNote';
 import Broker from '../models/Broker';
 import TradingNotesRepository from '../repositories/TradingNotesRepository';
 
 interface CSVTransaction {
+  code: string;
   ticker: string;
   quantity: number;
   type: 'buy' | 'sale';
@@ -31,14 +33,16 @@ class ImportTradingNotesService {
     const brokers: string[] = [];
 
     parseCSV.on('data', async line => {
-      const [ticker, quantity, type, price, date, broker_cnpj] = line.map((cell: string) =>
+      const [code, ticker, quantity, type, price, date, broker_cnpj] = line.map((cell: string) =>
         cell.trim(),
       );
 
-      if (!ticker || !quantity || !type || !broker_cnpj) return;
+      if (!code || !ticker || !quantity || !type || !broker_cnpj) return;
+
+      const dateConverted = convertDateBRtoISO(date);
 
       brokers.push(broker_cnpj);
-      tradingNotes.push({ ticker, quantity, type, price, date, broker_cnpj });
+      tradingNotes.push({ code, ticker, quantity, type, price, date: dateConverted, broker_cnpj });
     });
 
     await new Promise(resolve => parseCSV.on('end', resolve));
@@ -63,12 +67,15 @@ class ImportTradingNotesService {
       })),
     );
 
-    await brokersRepository.save(newBroker);
+    console.log('newBroker');
+    console.log(newBroker);
+    // await brokersRepository.save(newBroker);
 
     const finalBrokers = [...newBroker, ...existentBrokers];
 
     const createdTradingNotes = tradingNoteRepository.create(
       tradingNotes.map(tradingNote => ({
+        code: tradingNote.code,
         ticker: tradingNote.ticker,
         quantity: tradingNote.quantity,
         type: tradingNote.type,
@@ -81,7 +88,9 @@ class ImportTradingNotesService {
       })),
     );
 
-    await tradingNoteRepository.save(createdTradingNotes);
+    console.log('createdTradingNotes');
+    console.log(createdTradingNotes);
+    // await tradingNoteRepository.save(createdTradingNotes);
 
     await fs.promises.unlink(filePath);
 
