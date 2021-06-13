@@ -11,8 +11,10 @@ interface CSVTransaction {
   ticker: string;
   quantity: number;
   type: 'buy' | 'sale';
+  trade: 'D' | 'S';
   price: number;
   date: Date;
+  broker_name: string;
   broker_cnpj: string;
 }
 
@@ -33,16 +35,16 @@ class ImportTradingNotesService {
     const brokers: string[] = [];
 
     parseCSV.on('data', async line => {
-      const [code, ticker, quantity, type, price, date, broker_cnpj] = line.map((cell: string) =>
+      const [code, ticker, quantity, type, price, trade, date, broker_name, broker_cnpj] = line.map((cell: string) =>
         cell.trim(),
       );
 
-      if (!code || !ticker || !quantity || !type || !broker_cnpj) return;
+      if (!code || !ticker || !quantity || !type || !trade || !broker_cnpj) return;
 
       const dateConverted = convertDateBRtoISO(date);
 
       brokers.push(broker_cnpj);
-      tradingNotes.push({ code, ticker, quantity, type, price, date: dateConverted, broker_cnpj });
+      tradingNotes.push({ code, ticker, quantity, type, price, trade, date: dateConverted, broker_name, broker_cnpj });
     });
 
     await new Promise(resolve => parseCSV.on('end', resolve));
@@ -67,9 +69,7 @@ class ImportTradingNotesService {
       })),
     );
 
-    console.log('newBroker');
-    console.log(newBroker);
-    // await brokersRepository.save(newBroker);
+    await brokersRepository.save(newBroker);
 
     const finalBrokers = [...newBroker, ...existentBrokers];
 
@@ -80,6 +80,7 @@ class ImportTradingNotesService {
         quantity: tradingNote.quantity,
         type: tradingNote.type,
         price: tradingNote.price,
+        trade: tradingNote.trade,
         date: tradingNote.date,
         customer_id: user_id,
         broker_cnpj: finalBrokers.find(
@@ -88,9 +89,7 @@ class ImportTradingNotesService {
       })),
     );
 
-    console.log('createdTradingNotes');
-    console.log(createdTradingNotes);
-    // await tradingNoteRepository.save(createdTradingNotes);
+    await tradingNoteRepository.save(createdTradingNotes);
 
     await fs.promises.unlink(filePath);
 

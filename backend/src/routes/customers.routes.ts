@@ -10,7 +10,7 @@ usersRouter.post('/', celebrate({
   [Segments.BODY]: {
     name: Joi.string().required(),
     birth: Joi.date().required(),
-    gender: Joi.any().valid('M', 'F'),
+    gender: Joi.any().valid('M', 'F', 'O'),
     cpf: Joi.string().length(11).required(),
     email: Joi.string().email().required(),
     password: Joi.string().required(),

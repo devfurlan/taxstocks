@@ -28,6 +28,9 @@ class TradingNote {
   @Column()
   type: 'buy' | 'sale';
 
+  @Column()
+  trade: 'D' | 'S';
+
   @Column('decimal')
   price: number;
 
