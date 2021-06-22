@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
 
-export default class CreateTradingNotes1611275049110 implements MigrationInterface {
+export default class CreateDone1623890921362 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(new Table({
-      name: 'trading_notes',
+      name: 'done',
       columns: [
         {
           name: 'id',
@@ -11,10 +11,6 @@ export default class CreateTradingNotes1611275049110 implements MigrationInterfa
           isPrimary: true,
           generationStrategy: 'uuid',
           default: 'uuid_generate_v4()',
-        },
-        {
-          name: 'code',
-          type: 'varchar',
         },
         {
           name: 'ticker',
@@ -25,38 +21,34 @@ export default class CreateTradingNotes1611275049110 implements MigrationInterfa
           type: 'int',
         },
         {
-          name: 'price',
+          name: 'entry_price',
           type: 'decimal',
           precision: 10,
           scale: 2,
         },
         {
-          name: 'total',
-          type: 'decimal',
-          precision: 10,
-          scale: 2,
-        },
-        {
-          name: 'type',
-          type: 'varchar',
-        },
-        {
-          name: 'trade',
-          type: 'enum',
-          enum: ['D', 'S'],
-        },
-        {
-          name: 'date',
+          name: 'entry_date',
           type: 'date',
+        },
+        {
+          name: 'exit_price',
+          type: 'decimal',
+          precision: 10,
+          scale: 2,
+        },
+        {
+          name: 'exit_date',
+          type: 'date',
+        },
+        {
+          name: 'balance',
+          type: 'decimal',
+          precision: 10,
+          scale: 2,
         },
         {
           name: 'customer_id',
           type: 'uuid',
-        },
-        {
-          name: 'broker_cnpj',
-          type: 'char',
-          length: '14',
         },
         {
           name: 'created_at',
@@ -71,26 +63,17 @@ export default class CreateTradingNotes1611275049110 implements MigrationInterfa
       ],
     }));
 
-    await queryRunner.createForeignKey('trading_notes', new TableForeignKey({
-      name: 'TradingNoteCustomer',
+    await queryRunner.createForeignKey('done', new TableForeignKey({
+      name: 'DoneCustomer',
       columnNames: ['customer_id'],
       referencedColumnNames: ['id'],
       referencedTableName: 'customers',
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     }));
-
-    await queryRunner.createForeignKey('trading_notes', new TableForeignKey({
-      name: 'TradingNoteBroker',
-      columnNames: ['broker_cnpj'],
-      referencedColumnNames: ['cnpj'],
-      referencedTableName: 'brokers',
-      onDelete: 'RESTRICT',
-      onUpdate: 'CASCADE',
-    }));
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('trading_notes', true);
+    await queryRunner.dropTable('done', true);
   }
 }

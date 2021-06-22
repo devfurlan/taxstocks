@@ -1,10 +1,10 @@
-import { getCustomRepository } from 'typeorm';
+import { getRepository } from 'typeorm';
 import AppError from '../errors/AppError';
-import TradingNotesRepository from '../repositories/TradingNotesRepository';
+import TradingNote from '../models/TradingNote';
 
 class DeleteTradingNoteService {
   public async execute(id: string): Promise<void> {
-    const transactionsRepository = getCustomRepository(TradingNotesRepository);
+    const transactionsRepository = getRepository(TradingNote);
 
     const transaction = await transactionsRepository.findOne(id);
 

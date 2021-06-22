@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
-import { getCustomRepository } from 'typeorm';
-
-import TradingNotesRepository from '../repositories/TradingNotesRepository';
+import { getRepository } from 'typeorm';
 import DeleteTradingNoteService from '../services/DeleteTradingNoteService';
+import TradingNote from '../models/TradingNote';
 
 export default class TradingNotesController {
   public async index(request: Request, response: Response): Promise<Response> {
-    const tradingNotesRepository = getCustomRepository(TradingNotesRepository);
+    const tradingNotesRepository = getRepository(TradingNote);
 
     const tradingNote = await tradingNotesRepository.find();
 
@@ -16,7 +15,7 @@ export default class TradingNotesController {
   public async show(request: Request, response: Response): Promise<Response> {
     const { id } = request.params;
 
-    const tradingNotesRepository = getCustomRepository(TradingNotesRepository);
+    const tradingNotesRepository = getRepository(TradingNote);
     const tradingNote = await tradingNotesRepository.findOne(id);
 
     return response.json(tradingNote);

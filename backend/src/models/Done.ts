@@ -1,23 +1,18 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
-  UpdateDateColumn,
+  UpdateDateColumn, PrimaryColumn, PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import Customer from './Customer';
-import Broker from './Broker';
 
-@Entity('trading_notes')
-class TradingNote {
+@Entity('done')
+class Done {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @Column()
-  code: string;
 
   @Column()
   ticker: string;
@@ -26,19 +21,19 @@ class TradingNote {
   quantity: number;
 
   @Column('decimal')
-  price: number;
-
-  @Column('decimal')
-  total: number;
-
-  @Column()
-  type: 'buy' | 'sale';
-
-  @Column()
-  trade: 'D' | 'S';
+  entry_price: number;
 
   @Column('date')
-  date: Date;
+  entry_date: Date;
+
+  @Column('decimal')
+  exit_price: number;
+
+  @Column('date')
+  exit_date: Date;
+
+  @Column('decimal')
+  balance: number;
 
   @Column()
   customer_id: string;
@@ -47,10 +42,6 @@ class TradingNote {
   @JoinColumn({ name: 'customer_id' })
   customer: Customer;
 
-  @ManyToOne(() => Broker, broker => broker.trading_notes)
-  @JoinColumn({ name: 'broker_cnpj' })
-  broker_cnpj: Broker;
-
   @CreateDateColumn()
   created_at: Date;
 
@@ -58,4 +49,4 @@ class TradingNote {
   updated_at: Date;
 }
 
-export default TradingNote;
+export default Done;

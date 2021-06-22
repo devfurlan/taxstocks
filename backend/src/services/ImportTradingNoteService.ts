@@ -1,18 +1,20 @@
 import fs from 'fs';
 import csvParse from 'csv-parse';
-import { getCustomRepository, getRepository, In } from 'typeorm';
+import { getRepository, In } from 'typeorm';
 import convertDateBRtoISO from '../Utils/convertDateBRtoISO';
 import TradingNote from '../models/TradingNote';
 import Broker from '../models/Broker';
-import TradingNotesRepository from '../repositories/TradingNotesRepository';
+import BuyTickerService from './BuyTickerService';
+import SaleTickerService from './SaleTickerService';
 
-interface CSVTransaction {
+interface ICSVTransaction {
   code: string;
   ticker: string;
   quantity: number;
+  price: number;
+  total: number;
   type: 'buy' | 'sale';
   trade: 'D' | 'S';
-  price: number;
   date: Date;
   broker_name: string;
   broker_cnpj: string;
@@ -20,8 +22,10 @@ interface CSVTransaction {
 
 class ImportTradingNotesService {
   async execute(filePath: string, user_id: string): Promise<TradingNote[]> {
-    const tradingNoteRepository = getCustomRepository(TradingNotesRepository);
+    const tradingNoteRepository = getRepository(TradingNote);
     const brokersRepository = getRepository(Broker);
+    const buyTickerService = new BuyTickerService();
+    const saleTickerService = new SaleTickerService();
 
     const contactsReadStream = fs.createReadStream(filePath);
 
@@ -31,20 +35,31 @@ class ImportTradingNotesService {
 
     const parseCSV = contactsReadStream.pipe(parsers);
 
-    const tradingNotes: CSVTransaction[] = [];
+    const tradingNotes: ICSVTransaction[] = [];
     const brokers: string[] = [];
 
     parseCSV.on('data', async line => {
-      const [code, ticker, quantity, type, price, trade, date, broker_name, broker_cnpj] = line.map((cell: string) =>
+      const [code, ticker, quantity, price, total, trade, type, date, broker_name, broker_cnpj] = line.map((cell: string) =>
         cell.trim(),
       );
 
-      if (!code || !ticker || !quantity || !type || !trade || !broker_cnpj) return;
+      if (!code || !ticker || !quantity || !price || !total || !type || !trade || !broker_cnpj) return;
 
       const dateConverted = convertDateBRtoISO(date);
 
       brokers.push(broker_cnpj);
-      tradingNotes.push({ code, ticker, quantity, type, price, trade, date: dateConverted, broker_name, broker_cnpj });
+      tradingNotes.push({
+        code,
+        ticker,
+        quantity,
+        price,
+        total,
+        trade,
+        type,
+        date: dateConverted,
+        broker_name,
+        broker_cnpj,
+      });
     });
 
     await new Promise(resolve => parseCSV.on('end', resolve));
@@ -78,9 +93,10 @@ class ImportTradingNotesService {
         code: tradingNote.code,
         ticker: tradingNote.ticker,
         quantity: tradingNote.quantity,
-        type: tradingNote.type,
         price: tradingNote.price,
+        total: tradingNote.total,
         trade: tradingNote.trade,
+        type: tradingNote.type,
         date: tradingNote.date,
         customer_id: user_id,
         broker_cnpj: finalBrokers.find(
@@ -92,6 +108,10 @@ class ImportTradingNotesService {
     await tradingNoteRepository.save(createdTradingNotes);
 
     await fs.promises.unlink(filePath);
+
+    await buyTickerService.execute(createdTradingNotes, user_id);
+
+    await saleTickerService.execute(createdTradingNotes, user_id);
 
     return createdTradingNotes;
   }
