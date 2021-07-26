@@ -36,6 +36,9 @@ class Done {
   balance: number;
 
   @Column()
+  trade: 'D' | 'S';
+
+  @Column()
   customer_id: string;
 
   @ManyToOne(() => Customer, customer => customer.trading_notes)

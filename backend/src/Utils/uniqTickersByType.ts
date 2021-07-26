@@ -5,6 +5,7 @@ interface ITicker {
   quantity: number;
   price: number;
   total: number;
+  trade: 'S' | 'D';
   date: Date;
 }
 
@@ -30,6 +31,7 @@ export default function uniqTickersByType(tradingNotes: TradingNote[]) {
         quantity,
         price,
         total,
+        trade: note.trade,
         date: note.date,
       };
     }, {} as ITicker);

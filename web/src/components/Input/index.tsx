@@ -2,7 +2,7 @@ import React, { InputHTMLAttributes, useCallback, useEffect, useRef, useState } 
 import { useField } from '@unform/core';
 
 import { Label, Container, Error } from './styles';
-import { FiAlertCircle, FiMail } from 'react-icons/fi';
+import { FiAlertCircle } from 'react-icons/fi';
 
 interface IInputProps extends InputHTMLAttributes<HTMLInputElement> {
   id?: string;

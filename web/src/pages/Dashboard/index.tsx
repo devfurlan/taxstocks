@@ -1,193 +1,149 @@
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEventHandler, useEffect, useState } from 'react';
 import 'react-day-picker/lib/style.css';
 import api from '../../services/api';
-import Header from "../../components/Header";
+import Header from '../../components/Header';
 import formatValue from '../../utils/formatValue';
+import getMonthName from '../../utils/getMonthName';
 import {
-  Container,
-  Title,
-  TableContainer, SelectYear
+    Container,
+    Title,
+    TableContainer,
+    Select,
 } from './styles';
+import { Link } from 'react-router-dom';
 
-interface ITransaction {
-  id: string;
-  code: string;
-  ticker: string;
-  quantity: number;
-  type: 'buy' | 'sale';
-  price: number;
-  trade: 'D' | 'S';
-  date: Date;
-  formattedPrice: string;
-  formattedDate: string;
-  created_at: Date;
+interface IYear {
+    year: number;
+}
+
+interface ITaxes {
+    month: number;
+    balance: number;
+    swing_balance: number;
+    day_balance: number;
+    sale: number;
+    swing_sale: number;
+    day_sale: number;
+    tax: number;
+    swing_tax: number;
+    day_tax: number;
 }
 
 const Dashboard: React.FC = () => {
-  const [transactions, setTransactions] = useState<ITransaction[]>([]);
+    const [taxes, setTaxes] = useState<ITaxes[]>([]);
+    const [year, setYear] = useState<number>();
+    const [yearsList, setYearsList] = useState<IYear[]>([]);
 
-  useEffect(() => {
-    async function loadTransactions(): Promise<void> {
-      const response = await api.get('/trading-notes');
+    useEffect(() => {
+        async function loadTaxes(): Promise<void> {
+            const response = await api.get(`/tax-calculation/${year}`);
 
-      const transactionsFormatted = response.data.map(
-          (transaction: ITransaction) => ({
-            ...transaction,
-            formattedPrice: formatValue(transaction.price),
-            formattedDate: new Date(transaction.created_at).toLocaleDateString(
-                'pt-BR',
-            ),
-          }),
-      );
+            const taxesFormatted = response.data.map(
+                    (tax: ITaxes) => ({
+                        ...tax,
+                        balance: formatValue(tax.balance),
+                        swing_balance: formatValue(tax.swing_balance),
+                        day_balance: formatValue(tax.day_balance),
+                        sale: formatValue(tax.sale),
+                        swing_sale: formatValue(tax.swing_sale),
+                        day_sale: formatValue(tax.day_sale),
+                        tax: formatValue(tax.tax),
+                        swing_tax: formatValue(tax.swing_tax),
+                        day_tax: formatValue(tax.day_tax),
+                    }),
+            );
 
-      setTransactions(transactionsFormatted);
-    }
+            setTaxes(taxesFormatted);
+        }
 
-    loadTransactions();
-  }, []);
+        loadTaxes();
+    }, [year]);
 
-  return (
-      <>
-        <Header />
-        <Container>
-          <Title>
-            Calculadora DARF
-            <small>
-              Na tabela abaixo estão os resultados dos cálculos de DARF mensal, com base nas notas de corretagem enviadas. Verifique se todas as notas foram enviadas antes de realizar o pagamento da sua DARF.
-            </small>
-          </Title>
+    const handleYear: ChangeEventHandler<HTMLSelectElement> = data => {
+        const yearSelected = Number(data.target.value);
+        setYear(yearSelected);
+    };
 
-          <SelectYear>
-            <option>2020</option>
-            <option>2021</option>
-          </SelectYear>
+    useEffect(() => {
+        async function loadYears(): Promise<void> {
+            const response = await api.get(`/tax-calculation/years`);
 
-          <TableContainer>
-            <table>
-              <thead>
-              <tr>
-                <th>Mês</th>
-                <th>Resultado</th>
-                <th>Prejuízo a compensar</th>
-                <th>Total em vendas</th>
-                <th>Base de cálculo</th>
-                <th>Total DARF</th>
-              </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Janeiro</td>
-                  <td>R$ 1.018,23</td>
-                  <td>R$ 0,00</td>
-                  <td>R$ 13.359,15</td>
-                  <td>R$ 17,86</td>
-                  <td><strong>R$ 0,00</strong></td>
-                </tr>
-                <tr>
-                  <td>Fevereiro</td>
-                  <td>R$ 181,98	</td>
-                  <td>R$ 0,00</td>
-                  <td>R$ 1.755,00</td>
-                  <td>R$ 0,00</td>
-                  <td><strong>R$ 0,00</strong></td>
-                </tr>
-                <tr>
-                  <td>Março</td>
-                  <td>R$ -1.649,17</td>
-                  <td>R$ 1.649,17</td>
-                  <td>R$ 11.770,30</td>
-                  <td>R$ 0,00</td>
-                  <td><strong>R$ 0,00</strong></td>
-                </tr>
-                <tr>
-                  <td>Abril</td>
-                  <td>R$ -126,55</td>
-                  <td>R$ 1.775,71</td>
-                  <td>R$ 3.582,21</td>
-                  <td>R$ 0,00</td>
-                  <td><strong>R$ 0,00</strong></td>
-                </tr>
-                <tr>
-                  <td>Maio</td>
-                  <td>R$ 0,00</td>
-                  <td>R$ 1.775,71</td>
-                  <td>R$ 0,00</td>
-                  <td>R$ 0,00</td>
-                  <td><strong>R$ 0,00</strong></td>
-                </tr>
-                <tr>
-                  <td>Junho</td>
-                  <td>R$ 1.120,25</td>
-                  <td>R$ 1.775,71</td>
-                  <td>R$ 4.017,58</td>
-                  <td>R$ 0,00</td>
-                  <td><strong>R$ 0,00</strong></td>
-                </tr>
-                <tr>
-                  <td>Julho</td>
-                  <td>R$ 180,94</td>
-                  <td>R$ 1.775,71</td>
-                  <td>R$ 2.995,12</td>
-                  <td>R$ 0,00</td>
-                  <td><strong>R$ 0,00</strong></td>
-                </tr>
-                <tr>
-                  <td>Agosto</td>
-                  <td>R$ 1.234,02</td>
-                  <td>R$ 1.775,71</td>
-                  <td>R$ 8.066,60</td>
-                  <td>R$ 0,00</td>
-                  <td><strong>R$ 0,00</strong></td>
-                </tr>
-                <tr>
-                  <td>Setembro</td>
-                  <td>R$ -4.968,86</td>
-                  <td>R$ 6.748,06</td>
-                  <td>	R$ 24.740,57</td>
-                  <td>R$ 3,49</td>
-                  <td><strong>R$ 0,00</strong></td>
-                </tr>
-                <tr>
-                  <td>Outubro</td>
-                  <td>R$ 565,75</td>
-                  <td>R$ 6.182,31</td>
-                  <td>R$ 35.571,96</td>
-                  <td>R$ 0,00</td>
-                  <td><strong>R$ 0,00</strong></td>
-                </tr>
-                <tr>
-                  <td>Novembro</td>
-                  <td>R$ 2.988,30</td>
-                  <td>R$ 3.194,01</td>
-                  <td>R$ 100.203,19	</td>
-                  <td>R$ 0,00</td>
-                  <td><strong>R$ 0,00</strong></td>
-                </tr>
-                <tr>
-                  <td>Dezembro</td>
-                  <td>R$ 1.601,67</td>
-                  <td>R$ 1.592,34</td>
-                  <td>R$ 143.571,43</td>
-                  <td>R$ 0,00</td>
-                  <td><strong>R$ 0,00</strong></td>
-                </tr>
-                {/*{transactions.map(transaction => (*/}
-                {/*  <tr key={transaction.id}>*/}
-                {/*    <td className="title">{transaction.ticker}</td>*/}
-                {/*    <td className={transaction.type}>*/}
-                {/*      {transaction.type === 'buy' && '- '}*/}
-                {/*      {transaction.formattedPrice}*/}
-                {/*    </td>*/}
-                {/*    <td>{transaction.quantity}</td>*/}
-                {/*    <td>{transaction.formattedDate}</td>*/}
-                {/*  </tr>*/}
-                {/*))}*/}
-              </tbody>
-            </table>
-          </TableContainer>
-        </Container>
-      </>
-  );
+            if (response.data.length) {
+                const years = response.data.map((year: IYear) => ({ ...year }));
+                setYearsList(years);
+
+                const year = response.data[0].year;
+                setYear(year);
+            }
+        }
+
+        loadYears();
+    }, []);
+
+
+    return (
+            <>
+                <Header/>
+                <Container>
+                    <Title>
+                        Calculadora DARF
+                        <small>
+                            Na tabela abaixo estão os resultados dos cálculos de DARF mensal, com base nas notas de
+                            corretagem enviadas.<br/>
+                            Verifique se todas as notas foram enviadas antes de realizar o pagamento da sua DARF.
+                        </small>
+                    </Title>
+
+                    {!taxes.length && (
+                      <Link to="/import" className="link_sign">
+                          Enviar notas
+                      </Link>
+                    )}
+                    {!!taxes.length && (
+                      <>
+                          <Select name="year" onChange={handleYear}>
+                              {yearsList.map(option => (
+                                <option key={option.year} value={option.year}>
+                                    {option.year}
+                                </option>
+                              ))}
+                          </Select>
+
+                          <TableContainer>
+                              <table>
+                                  <thead>
+                                  <tr>
+                                      <th>Mês</th>
+                                      <th>Resultado Swing</th>
+                                      <th>Resultado Day</th>
+                                      <th>Resultado</th>
+                                      <th>Vendas Swing</th>
+                                      <th>Vendas Day</th>
+                                      <th>Total em vendas</th>
+                                      <th>Total DARF</th>
+                                  </tr>
+                                  </thead>
+                                  <tbody>
+                                  {taxes.map(tax => (
+                                    <tr key={tax.balance}>
+                                        <td className="title">{getMonthName(tax.month)}</td>
+                                        <td>{tax.swing_balance}</td>
+                                        <td>{tax.day_balance}</td>
+                                        <td>{tax.balance}</td>
+                                        <td>{tax.swing_sale}</td>
+                                        <td>{tax.day_sale}</td>
+                                        <td>{tax.sale}</td>
+                                        <td>{tax.tax}</td>
+                                    </tr>
+                                  ))}
+                                  </tbody>
+                              </table>
+                          </TableContainer>
+                      </>
+                    )}
+                </Container>
+            </>
+    );
 };
 
 export default Dashboard;

@@ -6,9 +6,15 @@ export default class CreatePortfolio1623890772667 implements MigrationInterface 
       name: 'portfolio',
       columns: [
         {
+          name: 'id',
+          type: 'uuid',
+          isPrimary: true,
+          generationStrategy: 'uuid',
+          default: 'uuid_generate_v4()',
+        },
+        {
           name: 'ticker',
           type: 'varchar',
-          isPrimary: true,
         },
         {
           name: 'quantity',

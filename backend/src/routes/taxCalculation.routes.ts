@@ -7,6 +7,8 @@ const taxCalculationController = new TaxCalculationController();
 
 taxCalculationRouter.use(ensureAuthenticated);
 
+taxCalculationRouter.get('/years', taxCalculationController.index);
+
 taxCalculationRouter.get('/:year', taxCalculationController.show);
 
 export default taxCalculationRouter;

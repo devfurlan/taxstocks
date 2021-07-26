@@ -43,7 +43,11 @@ const Import: React.FC = () => {
         description: 'As notas já foram enviadas e estão inclusas nos calculos',
       });
     } catch (err) {
-      console.log(err.response.error);
+      addToast({
+        type: 'danger',
+        title: 'Erro!',
+        description: 'Ocorreu algum erro na importação de notas',
+      });
     }
   }
 

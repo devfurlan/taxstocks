@@ -4,14 +4,18 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
-  UpdateDateColumn, PrimaryColumn,
+  UpdateDateColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import Customer from './Customer';
 
 @Entity('portfolio')
 class Portfolio {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
   ticker: string;
 
   @Column('int')
@@ -30,7 +34,7 @@ class Portfolio {
   customer_id: string;
 
   @ManyToOne(() => Customer, customer => customer.trading_notes)
-  @JoinColumn({name: 'customer_id'})
+  @JoinColumn({ name: 'customer_id' })
   customer: Customer;
 
   @CreateDateColumn()

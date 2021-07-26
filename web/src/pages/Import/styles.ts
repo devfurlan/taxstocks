@@ -20,6 +20,7 @@ export const Title = styled.h1`
     display: block;
     margin-top: 15px;
     text-transform: initial;
+    line-height: 1.85;
   }
 `;
 

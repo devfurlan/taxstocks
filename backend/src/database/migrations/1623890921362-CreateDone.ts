@@ -47,6 +47,11 @@ export default class CreateDone1623890921362 implements MigrationInterface {
           scale: 2,
         },
         {
+          name: 'trade',
+          type: 'enum',
+          enum: ['D', 'S'],
+        },
+        {
           name: 'customer_id',
           type: 'uuid',
         },

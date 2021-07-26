@@ -17,16 +17,21 @@ export const Container = styled.div`
         color: #fff;
         text-decoration: none;
         font-size: 14px;
-        transition: opacity 0.2s;
+        transition: .2s all linear;
 
         & + a {
           margin-left: 32px;
         }
 
         &:hover {
-          opacity: 0.6;
+          color: #4FEAC1;
+          transition: .2s all linear;
         }
       }
+    }
+
+    .active {
+      color: #4FEAC1;
     }
   }
 `;

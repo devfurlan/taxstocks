@@ -71,7 +71,7 @@ class ImportTradingNotesService {
     });
 
     const existentBrokersCNPJs = existentBrokers.map(
-      (broker: Broker) => broker.cnpj,
+      (broker: Broker) => broker.cnpj.trim(),
     );
 
     const addBrokerCNPJ = brokers

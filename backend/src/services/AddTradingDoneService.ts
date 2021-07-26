@@ -7,6 +7,7 @@ interface ITicker {
   quantity: number;
   price: number;
   total: number;
+  trade: 'D' | 'S';
   date: Date;
 }
 
@@ -23,6 +24,7 @@ class AddTradingDoneService {
       entry_date: portfolio.entry_date,
       exit_price: note.price,
       exit_date: note.date,
+      trade: note.trade,
       balance,
       customer_id: user_id,
     });
